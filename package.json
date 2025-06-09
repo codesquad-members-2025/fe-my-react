@@ -3,20 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "config": {
-    "commitizen": {
-      "path": "cz-git"
-    }
-  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "commit": "cz"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "commitizen": "^4.3.1",
-    "cz-git": "^1.11.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
   }
