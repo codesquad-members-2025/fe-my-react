@@ -1,1 +1,3 @@
-# fe-my-react
+# micro-React
+
+Built with vanilla JavaScript
