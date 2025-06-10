@@ -47,4 +47,14 @@ createElement(Greeting, { name: "Taylor" });
 
 ### 반환값
 
-- createElement는 아래 프로퍼티를 가지는 가상돔(=VNode) 반환합니다.
+createElement는 아래 프로퍼티를 가지는 가상돔(=VNode)를 반환합니다.
+
+- type: 전달받은 type.
+- props: ref와 key를 제외한 전달받은 props.
+- ref: 전달받은 ref. 누락된 경우 null.
+- key: 전달받은 key를 강제 변환한 문자열. 누락된 경우 null.
+- children: 전달받은 children배열을 어떻게 할까..?
+
+### 주의 사항
+
+- 반드시 React 엘리먼트와 그 프로퍼티는 불변하게 취급해야하며 엘리먼트 생성 후에는 그 내용이 변경되어선 안 됩니다. -> 반환된 엘리먼트(VNode)와 그 프로퍼티를 freeze 한다.
