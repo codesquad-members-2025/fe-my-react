@@ -40,7 +40,6 @@ createElement(Greeting, { name: "Taylor" });
 
   - ❗️이때 전달한 props 객체의 ref와 key는 특수하기 때문에 생성한 element에서 element.props.ref 와 element.props.key는 사용할 수 없습니다. element.ref 또는 element.key로 사용할 수 있습니다.
   - 즉, ref와 key는 컴포넌트의 접근을 방지하고 오직 프레임 워크만 사용 할 수 있게 하기 위해서 props의 필드에서 제거한뒤 필드의 위치를 옮깁니다.
-  - 🔗 **_ 관련 문서 참조 링크 첨부 예정 _**
 
 - children: 나머지 연산자를 이용하여 배열로 입력 받습니다.
   - 0개 이상의 자식 노드. 엘리먼트, 문자열, 숫자, 빈 노드(null, undefined, true, false) 그리고 노드 배열을 포함한 모든 노드가 될 수 있습니다.
@@ -58,3 +57,10 @@ createElement는 아래 프로퍼티를 가지는 가상돔(=VNode)를 반환합
 ### 주의 사항
 
 - 반드시 React 엘리먼트와 그 프로퍼티는 불변하게 취급해야하며 엘리먼트 생성 후에는 그 내용이 변경되어선 안 됩니다. -> 반환된 엘리먼트(VNode)와 그 프로퍼티를 freeze 한다.
+
+### 프로젝트 참고 위키
+
+- <a href='https://velog.io/@y-minion/DOM-구조는-자식의-중첩된-구조를-갖지-않는가'>📚 DOM 구조는 자식의 중첩된 구조를 갖지 않는가?</a>
+- <a href='https://velog.io/@y-minion/React-Virtual-DOM에서-자식-목록을-평탄화flatten하는-이유'>📚 React Virtual DOM에서 자식 목록을 평탄화(flatten)하는 이유</a>
+- <a href='https://velog.io/@y-minion/DOM-구조는-왜-평평한-목록인가-그리고-React는-왜-이를-평탄화flatten해야-하는가'>📚 DOM 구조는 왜 '평평한 목록'인가? 그리고 React는 왜 이를 '평탄화(flatten)'해야 하는가</a>
+- <a href='https://velog.io/@y-minion/React에서의-자식-평탄화-이해하기-Babel-JSX-createElement-Virtual-DOM-전환까지-전부-정리'>📚React에서의 자식 평탄화 이해하기: Babel, JSX, createElement, Virtual DOM 전환까지 전부 정리</a>
