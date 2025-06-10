@@ -1,0 +1,53 @@
+{
+	"name": "build-my-own-react",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.cjs",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsup src/index.ts --format esm,cjs --dts --clean",
+		"test": "vitest --config vite.config.ts",
+		"test:watch": "vitest --watch --config vite.config.ts",
+		"test:ui": "vitest --ui --config vite.config.ts",
+		"test:coverage": "vitest run --coverage --config vite.config.ts",
+		"biome": "biome check src",
+		"biome:fix": "biome check --apply src",
+		"biome:format": "biome format src --write"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Nago730/build-my-own-react.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Nago730/build-my-own-react/issues"
+	},
+	"homepage": "https://github.com/Nago730/build-my-own-react#readme",
+	"dependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"tsup": "^8.5.0",
+		"typescript": "^5.8.3",
+		"vite": "^6.3.5",
+		"vitest": "^3.2.2"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"@vitest/coverage-v8": "^3.2.2",
+		"jsdom": "^26.1.0",
+		"vite-tsconfig-paths": "^5.1.4"
+	}
+}

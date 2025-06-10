@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"baseUrl": ".",
+		"paths": {
+			"@core/*": ["src/core/*"],
+			"@helpers/*": ["tests/helpers/*"]
+		},
+		"types": ["vitest", "node"]
+	},
+	"include": ["src", "tests"]
+}
