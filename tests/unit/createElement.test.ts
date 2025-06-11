@@ -1,54 +1,35 @@
 import { createElement } from '@core/createElement';
-import { TEXT_ELEMENT_TYPE, TEXT_NODE_VALUE } from '@helpers/constants';
+import { TEXT_NODE_VALUE } from '@helpers/constants';
 import { SAMPLE_TEXT_ELEMENT } from '@helpers/sampleElements';
 import { describe, expect, it } from 'vitest';
 
 describe('createElement', () => {
-	it('올바른 타입과 props로 요소를 생성해야 한다', () => {
-		const element = createElement({
-			type: 'div',
-			props: { id: 'app' },
-			children: ['Hello', 'World'],
-		});
-
-		expect(element.type).toBe('div');
-		expect(element.props.id).toBe('app');
-		expect(element.props.children).toHaveLength(2);
-
-		// 첫 번째 자식은 텍스트 노드로 변환되어야 함
-		expect(element.props.children[0]).toEqual({
-			type: TEXT_ELEMENT_TYPE,
-			props: {
-				nodeValue: 'Hello',
-				children: [],
-			},
-		});
+	it('기본 key(null)와 props(children) 없이 생성하면 빈 children 배열을 가진다', () => {
+		const el = createElement('div', { children: [] });
+		expect(el.type).toBe('div');
+		expect(el.key).toBeNull();
+		expect(el.props.children).toEqual([]);
 	});
 
-	it('자식 요소를 올바르게 중첩해서 생성해야 한다', () => {
-		const childElement = createElement({
-			type: 'span',
-			props: {},
-			children: ['Nested'],
-		});
-
-		const parentElement = createElement({
-			type: 'div',
-			props: {},
-			children: [childElement],
-		});
-
-		expect(parentElement.props.children).toHaveLength(1);
-		expect(parentElement.props.children[0]).toBe(childElement);
+	it('세 번째 인자로 전달한 key를 그대로 설정한다', () => {
+		const el = createElement('section', { children: [] }, 'custom-key');
+		expect(el.key).toBe('custom-key');
 	});
 
-	it('createTextElement 결과와 동일한 텍스트 노드를 생성해야 한다', () => {
-		const element = createElement({
-			type: 'span',
-			props: {},
-			children: [TEXT_NODE_VALUE],
-		});
+	it('문자열 자식을 TEXT_ELEMENT로 변환하고, nodeValue/children을 올바르게 설정한다', () => {
+		const el = createElement('p', { children: [TEXT_NODE_VALUE] });
+		expect(el.props.children).toHaveLength(1);
+		expect(el.props.children[0]).toEqual(SAMPLE_TEXT_ELEMENT);
+	});
 
-		expect(element.props.children[0]).toEqual(SAMPLE_TEXT_ELEMENT);
+	it('VNode 자식을 레퍼런스 그대로 유지한다', () => {
+		const child = createElement(
+			'span',
+			{ children: [TEXT_NODE_VALUE] },
+			'child-key',
+		);
+		const parent = createElement('div', { children: [child] }, 'parent-key');
+		expect(parent.props.children).toHaveLength(1);
+		expect(parent.props.children[0]).toBe(child);
 	});
 });
