@@ -33,7 +33,7 @@ interface VNode {
 export default function createElement(
   type: string | Function,
   props: HTMLAttributes | null,
-  ...children: (Child | Child[])[]
+  ...children: any[] // (Child | Child[])[] 이거 왜 안되는데?
 ): Readonly<VNode> {
   const { ref, key, ...rest } = props ?? {};
   const normalizedChildren: Children = Array.isArray(children)
