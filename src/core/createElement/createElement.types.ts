@@ -4,6 +4,7 @@ export type VNode = {
 		[key: string]: unknown;
 		children: VNode[];
 	};
+	key: string | null;
 };
 
 export type TextVNode = {
@@ -12,4 +13,5 @@ export type TextVNode = {
 		nodeValue: string;
 		children: [];
 	};
+	key: null;
 };

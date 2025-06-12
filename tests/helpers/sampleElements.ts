@@ -10,4 +10,5 @@ export const SAMPLE_TEXT_ELEMENT = {
 		nodeValue: TEXT_NODE_VALUE,
 		children: EMPTY_CHILDREN,
 	},
+	key: null,
 };

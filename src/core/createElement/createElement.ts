@@ -1,31 +1,33 @@
+import { EMPTY_CHILDREN, TEXT_ELEMENT } from './createElement.constants';
 import type { TextVNode, VNode } from './createElement.types';
 
 function createTextElement(text: string): TextVNode {
 	return {
-		type: 'TEXT_ELEMENT',
+		type: TEXT_ELEMENT,
 		props: {
 			nodeValue: text,
-			children: [],
+			children: EMPTY_CHILDREN,
 		},
+		key: null,
 	};
 }
 
-export function createElement({
-	type,
-	props,
-	children,
-}: {
-	type: string;
-	props?: Record<string, unknown>;
-	children: (VNode | string)[];
-}): VNode {
+export function createElement(
+	type: string,
+	props: {
+		[key: string]: unknown;
+		children: (VNode | string)[];
+	},
+	key: string | null = null,
+): VNode {
 	return {
 		type,
 		props: {
-			...(props || {}),
-			children: children.map((child) =>
+			...props,
+			children: props.children.map((child) =>
 				typeof child === 'object' ? child : createTextElement(child),
 			),
 		},
+		key,
 	};
 }
