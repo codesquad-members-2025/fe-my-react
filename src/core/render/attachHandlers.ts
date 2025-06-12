@@ -1,5 +1,4 @@
-// 1) 심벌 생성 (유니크 키)
-const HANDLERS = Symbol("__handlers");
+import { HANDLERS } from "./render";
 
 // 2) 전역 HTMLElement 인터페이스 확장
 declare global {
@@ -12,6 +11,8 @@ declare global {
  *
  * @param el : 타겟 노드
  * @param action : VNode의 props의 action
+ * @param handler : 노드에 등록할 이벤트 핸들러
+ *
  * 타겟 노드의 프로퍼티에 심벌핸들러 필드를 생성하고 안에 해당하는 action필드를 생성합니다.
  */
 export function attachHandlers(
