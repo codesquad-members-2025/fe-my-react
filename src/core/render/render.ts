@@ -57,7 +57,7 @@ export function render(vnode: VNode, container: Node): void {
       attachHandlers(rootNode, eventHandler, value);
     }
     //표준 HTML 속성
-    else if (prop && value) {
+    else if (value != null && value !== false) {
       const attribute = mapPropToAttr(prop);
       rootNode.setAttribute(attribute, value);
     }
