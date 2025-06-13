@@ -26,8 +26,6 @@ export function render(vnode: VNode, container: Node): void {
     });
     isEventDelegationInitialized = true;
   }
-  //❗️ -> 리팩토링 필요! 1. 이벤트 위임 방식 타당한지 검토, 2. handler함수 실행방법 검토 (=.call 이 방식도 컴토)
-
   //---------------------------------------------------------
 
   if (typeof vnode.type === "function") {
@@ -57,7 +55,11 @@ export function render(vnode: VNode, container: Node): void {
       attachHandlers(rootNode, eventHandler, value);
     }
 
+    //표준 HTML 속성
     if (prop && value) {
+      const attribute = mapPropToAttr(prop);
+      rootNode.setAttribute(attribute, value);
     }
   });
+  container.appendChild(rootNode);
 }

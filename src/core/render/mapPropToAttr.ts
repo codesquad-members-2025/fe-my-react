@@ -29,7 +29,7 @@ const jsxToHtmlAttr: Record<string, string> = {
 
 // 2. 매핑 함수
 /**
- * 입력: VNode의 prop, 반환: {type: 속성 타입, value: 매핑된 속성}
+ * 입력: VNode의 prop, 반환: 매핑된 속성
  */
 export function mapPropToAttr(propName: string): string {
   // 2.1. 특수 케이스가 있으면 우선 사용
