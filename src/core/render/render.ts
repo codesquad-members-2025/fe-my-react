@@ -4,7 +4,7 @@ import { internalRender } from "./internalRender";
 let isEventDelegationInitialized = false;
 
 // (2) 심벌 키 생성
-export const HANDLERS = Symbol("__handlers");
+export const HANDLERS = Symbol("__handlers"); //Symbol.for
 
 export function render(vnode: VNode, container: Node): void {
   //---------------------------------------------------------
