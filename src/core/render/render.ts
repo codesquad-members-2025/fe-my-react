@@ -38,7 +38,7 @@ export function render(vnode: VNode, container: Node): void {
 
   //VNode의 props 순회
   Object.entries(vnode.props).forEach(([prop, value]) => {
-    if (prop === "children" && value != null) {
+    if (prop === "children" && value != null && Array.isArray(value)) {
       value.forEach((child: string | VNode) => {
         // 1) 문자열 또는 숫자면 텍스트 노드
         if (typeof child === "string" || typeof child === "number") {
