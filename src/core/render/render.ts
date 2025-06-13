@@ -47,16 +47,17 @@ export function render(vnode: VNode, container: Node): void {
           render(child, rootNode);
         }
       });
-    }
-
-    //이벤트 핸들러 props
-    if (!!prop && prop !== "children" && typeof value === "function") {
+    } else if (
+      //이벤트 핸들러 props
+      !!prop &&
+      prop !== "children" &&
+      typeof value === "function"
+    ) {
       const eventHandler = mapPropToAttr(prop);
       attachHandlers(rootNode, eventHandler, value);
     }
-
     //표준 HTML 속성
-    if (prop && value) {
+    else if (prop && value) {
       const attribute = mapPropToAttr(prop);
       rootNode.setAttribute(attribute, value);
     }
