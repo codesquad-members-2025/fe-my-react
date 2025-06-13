@@ -13,12 +13,15 @@ export function render(vnode: VNode, container: Node): void {
   // (3) 한 번만: 최상위 컨테이너에 click 위임 리스너 등록
   if (!isEventDelegationInitialized) {
     container.addEventListener("click", (event: Event) => {
-      let node = event.target as HTMLElement | null;
-      const handler = (node as any)[HANDLERS]?.click;
-      if (typeof handler === "function") {
-        handler(event);
-        // handler.call(node, event);
-        return;
+      let origin = event.target as HTMLElement | null;
+      //이벤트 핸들러가 바인딩된 노드까지 위로 올라가야한다. -> .parent
+      while (!!origin && origin !== container) {
+        const handler = (origin as HTMLElement)[HANDLERS]?.click;
+        if (typeof handler === "function") {
+          handler(event); // handler.call(node, event);
+          return;
+        }
+        origin = origin.parentElement;
       }
     });
     isEventDelegationInitialized = true;
