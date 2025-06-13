@@ -18,7 +18,7 @@ export function render(vnode: VNode, container: Node): void {
       while (!!origin && origin !== container) {
         const handler = (origin as HTMLElement)[HANDLERS]?.click;
         if (typeof handler === "function") {
-          handler(event); // handler.call(node, event);
+          handler.call(origin, event);
           return;
         }
         origin = origin.parentElement;
