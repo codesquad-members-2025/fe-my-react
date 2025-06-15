@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
+    "allowJs": true, // .js/.jsx 파일을 컴파일 대상에 포함
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@shared/*": ["shared/*"],
+      "@core/*": ["core/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -17,9 +24,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "types": ["vitest"]
   },
   "include": ["src"]
 }
