@@ -1,4 +1,3 @@
-// src/types/base.types.ts
 import type { FRAGMENT, TEXT_ELEMENT } from '../core/constants';
 
 // DOM 요소의 속성에 대한 기본 타입

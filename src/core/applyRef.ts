@@ -1,5 +1,4 @@
-// src/core/applyRef.ts
-import type { MutableRefObject, Ref } from '../../types/base.types';
+import type { MutableRefObject, Ref } from '../types/base.types';
 
 export function applyRef(dom: Node, ref: Ref | undefined) {
 	if (typeof ref === 'function') {

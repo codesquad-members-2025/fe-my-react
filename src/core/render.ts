@@ -1,6 +1,6 @@
-import type { FragmentVNode, TextVNode, VNode } from '../../types/base.types';
-import { applyRef } from '../applyRef';
-import { FRAGMENT, TEXT_ELEMENT } from '../constants';
+import type { FragmentVNode, TextVNode, VNode } from '../types/base.types';
+import { applyRef } from './applyRef';
+import { FRAGMENT, TEXT_ELEMENT } from './constants';
 
 export function render(
 	vnode: VNode | TextVNode | FragmentVNode,
