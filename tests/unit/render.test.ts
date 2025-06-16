@@ -1,5 +1,5 @@
+import { FRAGMENT, TEXT_ELEMENT } from '@src/core/constants';
 import { render } from '@src/core/render';
-import { FRAGMENT, TEXT_ELEMENT } from '@src/core/render/constants';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 let container: HTMLElement;
