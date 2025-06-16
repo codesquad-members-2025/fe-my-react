@@ -30,5 +30,5 @@
 
     "types": ["vitest"]
   },
-  "include": ["src"]
+  "include": ["src", "jsx-demo"]
 }
