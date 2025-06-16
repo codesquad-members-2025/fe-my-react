@@ -1,10 +1,10 @@
+import { FRAGMENT, TEXT_ELEMENT } from './core/constants';
 import {
 	type FragmentVNode,
 	TextVNode,
 	type VNode,
 	type VNodeChildren,
-} from '../types/base.types';
-import { FRAGMENT, TEXT_ELEMENT } from './constants';
+} from './types/base.types';
 
 function wrapChild(child: VNode | string | number): VNode {
 	if (typeof child === 'string' || typeof child === 'number') {
