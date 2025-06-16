@@ -33,20 +33,7 @@ function jsx(type: any, props: any, key: string | null = null) {
 	return vnode;
 }
 
-function jsxs(type: any, props: any, key: string | null = null) {
-	const { children, ref, ...restProps } = props;
-
-	const vnode: any = {
-		type,
-		props: restProps,
-	};
-
-	if (key !== null) vnode.key = key;
-	if (children !== undefined) vnode.children = normalizeChildren(children);
-	if (ref !== undefined) vnode.ref = ref;
-
-	return vnode;
-}
+const jsxs = jsx;
 
 function Fragment(props: any) {
 	return {
