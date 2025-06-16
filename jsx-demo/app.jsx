@@ -1,5 +1,3 @@
-import MyReact from "@/core";
-
 function App() {
   return (
     <div>
@@ -11,4 +9,4 @@ function App() {
 
 // DOM에 렌더링
 const root = document.getElementById("root");
-render(<App />, root);
+MyReact.render(<App />, root);
