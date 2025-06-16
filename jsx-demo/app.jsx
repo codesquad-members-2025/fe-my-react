@@ -1,3 +1,5 @@
+import { performanceInstrument } from "./performance/performanceInstrument";
+
 function App() {
   return (
     <div>
@@ -53,3 +55,4 @@ function App() {
 // DOM에 렌더링
 const root = document.getElementById("root");
 MyReact.render(<App />, root);
+performanceInstrument(root, <App />);
