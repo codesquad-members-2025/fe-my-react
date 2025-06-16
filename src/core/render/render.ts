@@ -1,10 +1,13 @@
 import { applyRef } from '../applyRef';
-import { FRAGMENT, TEXT_ELEMENT } from './constants';
+import { FRAGMENT, TEXT_ELEMENT } from '../constants';
 
 export function render(vnode: any, container: Element) {
 	// 함수형 컴포넌트 처리
 	if (typeof vnode.type === 'function') {
-		const componentVNode = vnode.type(vnode.props); // 함수 호출로 자식 VNode 반환
+		const componentVNode = vnode.type({
+			...vnode.props,
+			children: vnode.children,
+		}); // 함수 호출로 자식 VNode 반환
 		return render(componentVNode, container); // 재귀 렌더링
 	}
 
