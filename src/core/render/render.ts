@@ -1,3 +1,4 @@
+import { applyRef } from '../applyRef';
 import { FRAGMENT, TEXT_ELEMENT } from './constants';
 
 export function render(vnode: any, container: Element) {
@@ -28,6 +29,8 @@ export function render(vnode: any, container: Element) {
 			render(child, dom as Element);
 		}
 	}
+
+	applyRef(dom, vnode.ref);
 
 	container.appendChild(dom);
 }
