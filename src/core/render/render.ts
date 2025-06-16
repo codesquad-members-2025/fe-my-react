@@ -1,7 +1,7 @@
 import type { VNode } from "@/shared/types/vnode";
 import { internalRender } from "./internalRender";
 // (1) 이벤트 위임 초기화 상태 플래그
-let isEventDelegationInitialized = false;
+const delegatedContainers = new WeakSet<Node>();
 
 // (2) 심벌 키 생성
 export const HANDLERS = Symbol("__handlers"); //Symbol.for
@@ -9,7 +9,7 @@ export const HANDLERS = Symbol("__handlers"); //Symbol.for
 export function render(vnode: VNode, container: Node): void {
   //---------------------------------------------------------
   // (3) 한 번만: 최상위 컨테이너에 click 위임 리스너 등록
-  if (!isEventDelegationInitialized) {
+  if (!delegatedContainers.has(container)) {
     container.addEventListener("click", (event: Event) => {
       let origin = event.target as HTMLElement | null;
       //이벤트 핸들러가 바인딩된 노드까지 위로 올라가야한다. -> .parent
@@ -22,7 +22,7 @@ export function render(vnode: VNode, container: Node): void {
         origin = origin.parentElement;
       }
     });
-    isEventDelegationInitialized = true;
+    delegatedContainers.add(container);
   }
   //---------------------------------------------------------
 
