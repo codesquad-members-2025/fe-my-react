@@ -1,5 +1,5 @@
 // 이벤트 등록 전용 맵
-export const eventList = new Set();
+export const eventList: Set<string> = new Set();
 
 /**
  *
