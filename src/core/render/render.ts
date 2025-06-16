@@ -1,24 +1,27 @@
+import type { FragmentVNode, TextVNode, VNode } from '../../types/base.types';
 import { applyRef } from '../applyRef';
 import { FRAGMENT, TEXT_ELEMENT } from '../constants';
 
-export function render(vnode: any, container: Element) {
-	// 함수형 컴포넌트 처리
+export function render(
+	vnode: VNode | TextVNode | FragmentVNode,
+	container: Element,
+): void {
 	if (typeof vnode.type === 'function') {
-		const componentVNode = vnode.type({
+		const componentVNode = (vnode.type as Function)({
 			...vnode.props,
 			children: vnode.children,
-		}); // 함수 호출로 자식 VNode 반환
-		return render(componentVNode, container); // 재귀 렌더링
+		});
+		return render(componentVNode, container);
 	}
 
 	let dom: Node;
 
 	if (vnode.type === TEXT_ELEMENT) {
-		dom = document.createTextNode(vnode.props.nodeValue);
+		dom = document.createTextNode((vnode as TextVNode).props.nodeValue);
 	} else if (vnode.type === FRAGMENT) {
 		dom = document.createDocumentFragment();
 	} else {
-		dom = document.createElement(vnode.type);
+		dom = document.createElement(vnode.type as string);
 	}
 
 	for (const [key, value] of Object.entries(vnode.props ?? {})) {
