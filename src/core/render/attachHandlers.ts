@@ -22,6 +22,6 @@ export function attachHandlers(
   handler: (e: Event) => void
 ) {
   registerEvent(action);
-  el[HANDLERS] = el[HANDLERS] ?? {};
-  el[HANDLERS][action] = handler;
+  el[HANDLERS] = el[HANDLERS] ? el[HANDLERS] : {};
+  el[HANDLERS]![action] = handler;
 }
