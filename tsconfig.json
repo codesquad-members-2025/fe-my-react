@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true, // .js/.jsx 파일을 컴파일 대상에 포함
+    "jsx": "preserve",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
