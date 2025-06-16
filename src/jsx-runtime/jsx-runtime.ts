@@ -1,7 +1,6 @@
 import { FRAGMENT, TEXT_ELEMENT } from '../core';
 
 function wrapChild(child: any) {
-	let vnode;
 	if (typeof child === 'string' || typeof child === 'number') {
 		return {
 			type: TEXT_ELEMENT,
@@ -9,6 +8,7 @@ function wrapChild(child: any) {
 			children: [],
 		};
 	}
+	return child;
 }
 
 function normalizeChildren(children: any) {
