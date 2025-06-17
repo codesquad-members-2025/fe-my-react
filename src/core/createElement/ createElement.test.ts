@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import createElement from "./ createElement";
 
 describe("createElement 함수 단위 테스트", () => {
-  it("올바른 vnode를 생성해야합니다.", () => {
+  it(".jsx코드에서 js로 트랜스 파일링되는 상황에서 jsxfactory에 의해 createElement가 호출될 경우에 VNode구조가 생성되야 합니다. ", () => {
     const vnode = createElement(
       "h1",
       {
@@ -45,7 +45,7 @@ describe("createElement 함수 단위 테스트", () => {
       },
     });
   });
-  it("호스트 엘리먼트만 있는 경우도 안전하게 처리해야합니다.", () => {
+  it("호스트 엘리먼트만 있는 경우에도 기본 VNode구조가 유지되야 합니다.", () => {
     const vnode = createElement("h1", null);
     expect(vnode).toEqual({
       type: "h1",
