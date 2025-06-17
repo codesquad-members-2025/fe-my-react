@@ -21,7 +21,6 @@ export type VNodeChildren = VNode | VNode[] | undefined;
 export interface VNode {
 	type: string | Function | symbol; // 요소 태그 이름, 함수형 컴포넌트, 또는 특별 심볼
 	props: VNodeProps;
-	children?: VNode[];
 	key?: string | null;
 	ref?: Ref;
 }
@@ -30,14 +29,12 @@ export interface VNode {
 export interface TextVNode extends VNode {
 	type: typeof TEXT_ELEMENT;
 	props: { nodeValue: string };
-	children: [];
 }
 
 // Fragment를 위한 특정 VNode
 export interface FragmentVNode extends VNode {
 	type: typeof FRAGMENT;
 	props: {};
-	children?: VNode[];
 }
 
 export interface Fiber {

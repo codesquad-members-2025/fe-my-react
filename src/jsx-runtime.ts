@@ -1,17 +1,16 @@
 import { FRAGMENT, TEXT_ELEMENT } from './core/constants';
-import {
-	type FragmentVNode,
+import type {
+	FragmentVNode,
 	TextVNode,
-	type VNode,
-	type VNodeChildren,
+	VNode,
+	VNodeChildren,
 } from './types/base.types';
 
-function wrapChild(child: VNode | string | number): VNode {
+function wrapChild(child: VNode | string | number): TextVNode | VNode {
 	if (typeof child === 'string' || typeof child === 'number') {
 		return {
 			type: TEXT_ELEMENT,
 			props: { nodeValue: String(child) },
-			children: [],
 		};
 	}
 	return child;
