@@ -15,6 +15,9 @@ function buildFiberTree(parentFiber: Fiber, vnodeChildren: VNode[]): void {
 			hookIndex: 0,
 		};
 
+		if (vnode.key) fiber.key = vnode.key;
+		if (vnode.ref) fiber.ref = vnode.ref;
+
 		if (typeof fiber.type === 'function') {
 			const renderedVNode = (fiber.type as Function)(fiber.props);
 			const children = renderedVNode.props.children ?? [];

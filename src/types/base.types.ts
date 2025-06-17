@@ -39,6 +39,8 @@ export interface FragmentVNode extends VNode {
 
 export interface Fiber {
 	type: string | Function | symbol;
+	key?: string | null;
+	ref?: Ref | null;
 	props: VNodeProps;
 	parent: Fiber | null;
 	child: Fiber | null;
