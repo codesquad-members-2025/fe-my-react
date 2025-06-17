@@ -15,15 +15,21 @@ function buildFiberTree(parentFiber: Fiber, vnodeChildren: VNode[]): void {
 			hookIndex: 0,
 		};
 
+		if (typeof fiber.type === 'function') {
+			const renderedVNode = (fiber.type as Function)(fiber.props);
+			const children = renderedVNode.props.children ?? [];
+			buildFiberTree(fiber, children);
+		} else {
+			const children = vnode.props.children ?? [];
+			if (children.length > 0) {
+				buildFiberTree(fiber, children);
+			}
+		}
+
 		if (i === 0) parentFiber.child = fiber;
 		else prevSibling!.sibling = fiber;
 
 		prevSibling = fiber;
-
-		const children = vnode.children ?? [];
-		if (children.length > 0) {
-			buildFiberTree(fiber, children);
-		}
 	}
 }
 
