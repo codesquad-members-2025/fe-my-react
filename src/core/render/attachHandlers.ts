@@ -1,4 +1,5 @@
 import { HANDLERS } from "./render";
+import { registerEvent } from "./eventHandelr";
 
 // 2) 전역 HTMLElement 인터페이스 확장
 declare global {
@@ -20,6 +21,7 @@ export function attachHandlers(
   action: string,
   handler: (e: Event) => void
 ) {
-  el[HANDLERS] = el[HANDLERS] ?? {};
-  el[HANDLERS][action] = handler;
+  registerEvent(action);
+  el[HANDLERS] = el[HANDLERS] ? el[HANDLERS] : {};
+  el[HANDLERS]![action] = handler;
 }

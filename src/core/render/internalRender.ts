@@ -28,8 +28,8 @@ export function internalRender(vnode: VNode, parent: Node): void {
       prop !== "children" &&
       typeof value === "function"
     ) {
-      const eventHandler = mapPropToAttr(prop);
-      attachHandlers(rootNode, eventHandler, value);
+      const eventName = mapPropToAttr(prop);
+      attachHandlers(rootNode, eventName, value);
     }
     //표준 HTML 속성
     else if (value != null && value !== false) {
