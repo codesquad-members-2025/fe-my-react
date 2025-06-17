@@ -14,14 +14,7 @@ export function internalRender(vnode: VNode, parent: Node): void {
   //VNode의 props 순회
   Object.entries(vnode.props).forEach(([prop, value]) => {
     if (prop === "children" && value != null && Array.isArray(value)) {
-      value.forEach((child: string | VNode) => {
-        // 1) 문자열 또는 숫자면 텍스트 노드
-        if (typeof child === "string" || typeof child === "number") {
-          rootNode.appendChild(document.createTextNode(String(child)));
-        } else if (child !== null && child !== undefined) {
-          internalRender(child, rootNode);
-        }
-      });
+      childrenHandler(rootNode, value as ChildElementType[]);
     } else if (
       //이벤트 핸들러 props
       isEventHandlerProp(prop, value)
@@ -43,4 +36,19 @@ export function internalRender(vnode: VNode, parent: Node): void {
 
 function isEventHandlerProp(prop: string, value: any): boolean {
   return !!prop && prop !== "children" && typeof value === "function";
+}
+
+// 자식으로 올 수 있는 요소들의 타입을 정의합니다.
+// null 또는 undefined는 렌더링 시 무시될 수 있는 값입니다.
+type ChildElementType = string | VNode | number;
+
+function childrenHandler(rootNode: HTMLElement, value: ChildElementType[]) {
+  value.forEach((child: ChildElementType) => {
+    // 1) 문자열 또는 숫자면 텍스트 노드
+    if (typeof child === "string" || typeof child === "number") {
+      rootNode.appendChild(document.createTextNode(String(child)));
+    } else if (child !== null && child !== undefined) {
+      internalRender(child, rootNode);
+    }
+  });
 }
