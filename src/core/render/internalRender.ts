@@ -24,9 +24,7 @@ export function internalRender(vnode: VNode, parent: Node): void {
       });
     } else if (
       //이벤트 핸들러 props
-      !!prop &&
-      prop !== "children" &&
-      typeof value === "function"
+      isEventHandlerProp(prop, value)
     ) {
       const eventName = mapPropToAttr(prop);
       attachHandlers(rootNode, eventName, value);
@@ -41,4 +39,8 @@ export function internalRender(vnode: VNode, parent: Node): void {
     }
   });
   parent.appendChild(rootNode);
+}
+
+function isEventHandlerProp(prop: string, value: any): boolean {
+  return !!prop && prop !== "children" && typeof value === "function";
 }
