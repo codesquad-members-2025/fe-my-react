@@ -1,4 +1,4 @@
-import type { Fiber, VNode } from '@src/types/base.types';
+import type { Fiber, VNode } from '../types/base.types';
 
 function buildFiberTree(parentFiber: Fiber, vnodeChildren: VNode[]): void {
 	let prevSibling: Fiber | null = null;

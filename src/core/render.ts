@@ -1,4 +1,4 @@
-import { buildFiberTree } from '@src/runtime/fiber';
+import { buildFiberTree } from '../runtime/fiber';
 import type {
 	Fiber,
 	FragmentVNode,
