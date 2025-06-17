@@ -39,3 +39,13 @@ export interface FragmentVNode extends VNode {
 	props: {};
 	children?: VNode[];
 }
+
+export interface Fiber {
+	type: string | Function | symbol;
+	props: VNodeProps;
+	parent: Fiber | null;
+	child: Fiber | null;
+	sibling: Fiber | null;
+	memoizedState: any[];
+	hookIndex: number;
+}
