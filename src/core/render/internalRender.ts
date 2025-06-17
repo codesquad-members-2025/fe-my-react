@@ -32,6 +32,9 @@ export function internalRender(vnode: VNode, parent: Node): void {
       attachHandlers(rootNode, eventName, value);
     }
     //표준 HTML 속성
+    // JavaScript 값으로 null, undefined, 또는 boolean false가 전달되면 해당 속성은 설정되지 않습니다.
+    // 속성 값으로 문자열 "false"를 사용하려면, 명시적으로 "false" 문자열을 전달해야 합니다.
+    // 예: <input aria-hidden="false"> 를 원하면 value로 "false" (문자열)를 전달합니다.
     else if (value != null && value !== false) {
       const attribute = mapPropToAttr(prop);
       rootNode.setAttribute(attribute, value);
