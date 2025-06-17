@@ -7,10 +7,7 @@ export function render(
 	container: Element,
 ): void {
 	if (typeof vnode.type === 'function') {
-		const componentVNode = (vnode.type as Function)({
-			...vnode.props,
-			children: vnode.children,
-		});
+		const componentVNode = (vnode.type as Function)(vnode.props);
 		return render(componentVNode, container);
 	}
 
@@ -25,14 +22,12 @@ export function render(
 	}
 
 	for (const [key, value] of Object.entries(vnode.props ?? {})) {
-		if (key !== 'children') {
+		if (key === 'children') {
+			for (const child of value) {
+				render(child, dom as Element);
+			}
+		} else {
 			(dom as any)[key] = value;
-		}
-	}
-
-	if (vnode.children) {
-		for (const child of vnode.children) {
-			render(child, dom as Element);
 		}
 	}
 

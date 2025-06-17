@@ -29,7 +29,7 @@ function jsx(
 	props: Record<string, any>,
 	key: string | null = null,
 ): VNode {
-	const { children, ref, ...restProps } = props;
+	const { ref, ...restProps } = props;
 
 	const vnode: VNode = {
 		type,
@@ -37,7 +37,10 @@ function jsx(
 	};
 
 	if (key !== null) vnode.key = key;
-	if (children !== undefined) vnode.children = normalizeChildren(children);
+
+	if (vnode.props.children !== undefined)
+		vnode.props.children = normalizeChildren(vnode.props.children);
+
 	if (ref !== undefined) vnode.ref = ref;
 
 	return vnode;
@@ -48,8 +51,9 @@ const jsxs = jsx;
 function Fragment(props: { children?: VNodeChildren }): FragmentVNode {
 	return {
 		type: FRAGMENT,
-		props: {},
-		children: props.children ? normalizeChildren(props.children) : [],
+		props: {
+			children: props.children ? normalizeChildren(props.children) : [],
+		},
 	};
 }
 
