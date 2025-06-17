@@ -4,7 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths"; // alias가 필요하다면
 import path from "path";
 
 export default defineConfig({
-  root: path.resolve(__dirname, "src/core"),
+  root: path.resolve(__dirname, "."),
   test: {
     include: ["**/*.test.ts"], // core 폴더 안의 테스트 파일 패턴
     globals: true,
