@@ -40,6 +40,7 @@ export function render(vnode: VNode, container: Node | HTMLElement): void {
   //---------------------------------------------------------
 
   // 4) 커밋 단계: fragment를 실제 container에 한 번에 붙임
+  //-----------------------> !!!!!!!!!!!!!!!!!!!!!!!!!!!! 이 로직 분리하기!!!!!!!!!!!!!!!!!!!!!!!!! -> 따로 분리해야한다. -> 왜 ???? 리렌더링 할때 아래 로직 즉, 실제 DOM에 바로 업데이트하는 로직이 같이 있으면 안된다.
   container.appendChild(fragment);
 }
 
