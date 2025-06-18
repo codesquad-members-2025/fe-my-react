@@ -1,17 +1,16 @@
 import { FRAGMENT, TEXT_ELEMENT } from './core/constants';
-import {
-	type FragmentVNode,
+import type {
+	FragmentVNode,
 	TextVNode,
-	type VNode,
-	type VNodeChildren,
+	VNode,
+	VNodeChildren,
 } from './types/base.types';
 
-function wrapChild(child: VNode | string | number): VNode {
+function wrapChild(child: VNode | string | number): TextVNode | VNode {
 	if (typeof child === 'string' || typeof child === 'number') {
 		return {
 			type: TEXT_ELEMENT,
 			props: { nodeValue: String(child) },
-			children: [],
 		};
 	}
 	return child;
@@ -29,7 +28,7 @@ function jsx(
 	props: Record<string, any>,
 	key: string | null = null,
 ): VNode {
-	const { children, ref, ...restProps } = props;
+	const { ref, ...restProps } = props;
 
 	const vnode: VNode = {
 		type,
@@ -37,7 +36,10 @@ function jsx(
 	};
 
 	if (key !== null) vnode.key = key;
-	if (children !== undefined) vnode.children = normalizeChildren(children);
+
+	if (vnode.props.children !== undefined)
+		vnode.props.children = normalizeChildren(vnode.props.children);
+
 	if (ref !== undefined) vnode.ref = ref;
 
 	return vnode;
@@ -48,8 +50,9 @@ const jsxs = jsx;
 function Fragment(props: { children?: VNodeChildren }): FragmentVNode {
 	return {
 		type: FRAGMENT,
-		props: {},
-		children: props.children ? normalizeChildren(props.children) : [],
+		props: {
+			children: props.children ? normalizeChildren(props.children) : [],
+		},
 	};
 }
 
