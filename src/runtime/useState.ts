@@ -28,6 +28,26 @@ export function reRender(currentWorkingNaber: Naber) {
 	const { children: prevNaber, type: FC } = currentWorkingNaber;
 	const nextNaber: Naber[] = (FC as Function)();
 
-	// Diff는 아직 미구현
 	Diff(prevNaber, nextNaber);
+}
+
+/**
+ * 작성 중...
+ *
+ * @param prevNaber
+ * @param nextNaber
+ */
+// function Diff(prev: Naber[], next: Naber[]) {}
+
+function isSameNaber(prev: Naber, next: Naber): boolean {
+	if (prev.key !== next.key) return false;
+	if (prev.type !== next.type) return false;
+	// props shallow compare
+	for (const key in prev.props)
+		if (prev.props[key] !== next.props[key]) return false;
+
+	for (const key in next.props)
+		if (next.props[key] !== prev.props[key]) return false;
+
+	return true;
 }
