@@ -1,6 +1,7 @@
 import type { VNode } from "@/shared/types/vnode";
 import { internalRender } from "./internalRender";
 import { eventList } from "./eventHandelr";
+import { setRootVDOM } from "../rootNode";
 
 // 요소에 저장된 이벤트 핸들러들의 타입 정의
 interface ElementEventHandlers {
@@ -14,6 +15,7 @@ const delegatedContainers = new WeakSet<Node>();
 export const HANDLERS = Symbol("__handlers"); //Symbol.for
 
 export function render(vnode: VNode, container: Node | HTMLElement): void {
+  setRootVDOM(vnode);
   // 2) 빌드 단계: DocumentFragment 생성
   const fragment: DocumentFragment = document.createDocumentFragment();
 
