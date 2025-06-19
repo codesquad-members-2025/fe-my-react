@@ -48,3 +48,13 @@ export interface Fiber {
 	memoizedState: any[];
 	hookIndex: number;
 }
+
+export interface Naber {
+	type: string | Function | symbol;
+	props: VNodeProps;
+	children: Naber[];
+	key: string | null;
+	ref: Ref | null;
+	memoizedState: any[];
+	hookIndex: number;
+}
