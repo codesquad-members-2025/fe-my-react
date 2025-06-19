@@ -2,13 +2,18 @@ import type { VNode } from "@/shared/types/vnode";
 import { internalRender } from "./internalRender";
 import { eventList } from "./eventHandelr";
 
+// 요소에 저장된 이벤트 핸들러들의 타입 정의
+interface ElementEventHandlers {
+  [eventType: string]: (this: HTMLElement, event: Event) => void;
+}
+
 // (1) 이벤트 위임 초기화 상태 플래그
 const delegatedContainers = new WeakSet<Node>();
 
 // (2) 심벌 키 생성
 export const HANDLERS = Symbol("__handlers"); //Symbol.for
 
-export function render(vnode: VNode, container: Node): void {
+export function render(vnode: VNode, container: Node | HTMLElement): void {
   // 2) 빌드 단계: DocumentFragment 생성
   const fragment: DocumentFragment = document.createDocumentFragment();
 
@@ -20,18 +25,13 @@ export function render(vnode: VNode, container: Node): void {
   if (!delegatedContainers.has(container)) {
     eventList.forEach((eventAction: string) => {
       container.addEventListener(eventAction, (event: Event) => {
-        let origin = event.target as HTMLElement | null;
-        //이벤트 핸들러가 바인딩된 노드까지 위로 올라가야한다. -> .parent
-        while (!!origin && origin !== container) {
-          const handler = (origin as HTMLElement)[HANDLERS]
-            ? (origin as HTMLElement)[HANDLERS]![eventAction]
-            : null;
-          if (typeof handler === "function") {
-            handler.call(origin, event);
-            return;
-          }
-          origin = origin.parentElement;
-        }
+        findAndExecuteDelegatedHandler(
+          event,
+          event.target as HTMLElement | null,
+          container,
+          eventAction,
+          HANDLERS as symbol
+        );
       });
     });
 
@@ -41,4 +41,26 @@ export function render(vnode: VNode, container: Node): void {
 
   // 4) 커밋 단계: fragment를 실제 container에 한 번에 붙임
   container.appendChild(fragment);
+}
+
+function findAndExecuteDelegatedHandler(
+  event: Event,
+  initialTarget: HTMLElement | null,
+  stopElement: any,
+  eventAction: string,
+  handlersKey: symbol
+): void {
+  let currentElement = initialTarget;
+  while (currentElement && currentElement !== stopElement) {
+    // 현재 요소에 핸들러들이 저장되어 있는지 확인합니다.
+    const handlersOnElement = (currentElement as any)[handlersKey] as
+      | ElementEventHandlers
+      | undefined;
+    const handler = handlersOnElement ? handlersOnElement[eventAction] : null;
+    if (typeof handler === "function") {
+      handler.call(currentElement, event);
+      return;
+    }
+    currentElement = currentElement.parentElement;
+  }
 }
