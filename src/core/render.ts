@@ -41,7 +41,12 @@ export function render(
 	vnode: VNode | TextVNode | FragmentVNode,
 	container: Element,
 ): void {
-	const naber = getNaberTree(vnode);
+	const rootVNode =
+		typeof vnode.type === 'function'
+			? (vnode.type as Function)(vnode.props)
+			: vnode;
+
+	const naber = getNaberTree(rootVNode);
 
 	const fragment = document.createDocumentFragment();
 
