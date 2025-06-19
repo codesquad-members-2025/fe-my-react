@@ -7,10 +7,18 @@ import type { VNode } from "@/shared/types/vnode";
  */
 let rootVDOM: VNode | null = null;
 
+/**
+ *
+ * @param vnode render함수가 실행될때 초반에 최상위의 Vnode의 참조값을 입력 받아야합니다.
+ */
 export function setRootVDOM(vnode: VNode): void {
   rootVDOM = vnode;
 }
 
+/**
+ *
+ * @returns 변경점이 발생하면 항상 rootVDOM에 접근해야하는데 해당 함수를 통해 접근 할 수 있습니다.
+ */
 export function getRootVDOM(): VNode {
   return rootVDOM!;
 }
