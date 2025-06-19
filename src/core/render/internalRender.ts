@@ -7,7 +7,11 @@ export function internalRender(vnode: VNode, parent: Node): void {
   if (typeof vnode.type === "function") {
     pushCurrentVNode(vnode);
     //VNode에 새로운 필드 추가(render 함수 실행 과정에 한정한다.) rerender과정에서는 이런 과정이 포함되어선 안된다.
-    vnode.hookMetaData = { hooks: [], pointer: 0 };
+    if (!vnode.hookMetaData) {
+      vnode.hookMetaData = { hooks: [], pointer: 0 };
+    } else {
+      vnode.hookMetaData.pointer = 0;
+    }
     internalRender(vnode.type(vnode.props), parent);
     popCurrentVNode();
     return;
