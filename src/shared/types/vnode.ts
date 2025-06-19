@@ -6,4 +6,8 @@ export interface VNode {
   key: string | number | null;
   ref: any;
   props: HTMLAttributes & { children: Children };
+  hookMetaData?: {
+    hooks: (string | number | boolean)[];
+    pointer: number;
+  };
 }
