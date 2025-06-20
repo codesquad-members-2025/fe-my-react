@@ -10,6 +10,7 @@ export function internalRender(vnode: VNode, parent: Node): void {
     if (!vnode.hookMetaData) {
       vnode.hookMetaData = { hooks: [], pointer: 0 };
     } else {
+      //함수형 컴포넌트 실행전 pointer 초기화 작업
       vnode.hookMetaData.pointer = 0;
     }
     internalRender(vnode.type(vnode.props), parent);
