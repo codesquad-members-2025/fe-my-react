@@ -1,4 +1,8 @@
-import type { HookMetaData, VNode } from "@/shared/types/vnode";
+import type {
+  HookMetaData,
+  HookMetaDataArr,
+  VNode,
+} from "@/shared/types/vnode";
 
 let vnodeStack: VNode[] = [];
 
@@ -31,8 +35,7 @@ export function useHookManger(): [
   isInit: () => boolean
 ] {
   const hookMetaData = getCurrentVNode().hookMetaData!;
-  const hooks: Array<[unknown, (newValue: any) => void, number]> =
-    hookMetaData.hooks as Array<[unknown, (newValue: any) => void, number]>;
+  const hooks: HookMetaDataArr = hookMetaData.hooks as HookMetaDataArr;
 
   /**
    *
@@ -46,13 +49,17 @@ export function useHookManger(): [
     setterFn: (newState: any) => void
   ): void => {
     // TODO: 그냥 push로 하면 안되는거야? 고민 해보기
-    hooks[hookMetaData.pointer] = [state, setterFn, hookMetaData.pointer];
-    hookMetaData.pointer++;
+    hooks.push([state, setterFn]);
     /**
-     * hooks.push([state, setterFn, hookMetaData.pointer])
+     *  hooks[hookMetaData.pointer] = [state, setterFn];
+     * hookMetaData.pointer++;
      */
   };
 
+  /**
+   *
+   * @returns VNode의 pointer 필드를 이용해 올바른 순서의 hookData배열을 반환합니다.
+   */
   const getCurrentHookData = (): HookMetaData => {
     const currentHookData = hooks[hookMetaData.pointer];
     hookMetaData.pointer++;
