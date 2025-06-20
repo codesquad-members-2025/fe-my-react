@@ -1,3 +1,3 @@
 export * from './render';
 export * from './constants';
-export * from './applyRef';
+export * from './domEffects';

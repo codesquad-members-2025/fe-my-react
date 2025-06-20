@@ -1,32 +1,22 @@
-import { buildFiberTree } from '../runtime/fiber';
+import { getNaberTree } from '../runtime/naber';
 import type {
-	Fiber,
 	FragmentVNode,
+	Naber,
 	TextVNode,
 	VNode,
 } from '../types/base.types';
-import { applyRef } from './applyRef';
 import { FRAGMENT, TEXT_ELEMENT } from './constants';
+import { applyProps, applyRef } from './domEffects';
 
-function createRootFiber(vnode: VNode): Fiber {
-	const rootFiber: Fiber = {
-		type: vnode.type,
-		props: vnode.props,
-		parent: null,
-		child: null,
-		sibling: null,
-		memoizedState: [],
-		hookIndex: 0,
-	};
+export function createDom(naber: Naber, fragment: Node): void {
+	// Naber가 FunctionComponent 일 때, 자식을 재귀
+	if (typeof naber.type === 'function') {
+		for (const child of naber.children) createDom(child, fragment);
+		return;
+	}
 
-	if (vnode.key) rootFiber.key = vnode.key;
-	if (vnode.ref) rootFiber.ref = vnode.ref;
-
-	return rootFiber;
-}
-
-export function createDom(fiber: Fiber): Node | null {
-	const { type, props, ref } = fiber;
+	// Naber가 HostElement 일 때
+	const { type, props, children, ref } = naber;
 
 	let dom: Node;
 
@@ -35,30 +25,16 @@ export function createDom(fiber: Fiber): Node | null {
 	else if (typeof type === 'string') {
 		dom = document.createElement(type);
 
-		for (const [key, value] of Object.entries(props)) {
-			if (key === 'children') continue;
-			(dom as any)[key] = value;
-		}
+		if (props) applyProps(dom, props);
+		if (ref) applyRef(dom, ref);
 	} else {
-		// 예상되지 않는 상황이므로 무시
-		return null;
+		// type이 예상하지 못한 값일 때, appenChild를 하지 않기 위해 return함
+		return;
 	}
 
-	if (ref) applyRef(dom, ref);
+	if (children) for (const child of children) createDom(child, dom);
 
-	return dom;
-}
-
-function commitToVirtualContainer(
-	fiber: Fiber,
-	container: DocumentFragment | Element,
-) {
-	const dom = createDom(fiber);
-	if (dom) container.appendChild(dom);
-
-	if (fiber.child && dom)
-		commitToVirtualContainer(fiber.child, dom as DocumentFragment | Element);
-	if (fiber.sibling) commitToVirtualContainer(fiber.sibling, container);
+	fragment.appendChild(dom);
 }
 
 export function render(
@@ -70,16 +46,12 @@ export function render(
 			? (vnode.type as Function)(vnode.props)
 			: vnode;
 
-	const rootFiber: Fiber = createRootFiber(rootVNode);
+	const naber = getNaberTree(rootVNode);
 
-	const children = rootVNode.props.children ?? [];
+	const fragment = document.createDocumentFragment();
 
-	buildFiberTree(rootFiber, children);
-
-	const virtualContainer = document.createDocumentFragment();
-
-	commitToVirtualContainer(rootFiber, virtualContainer);
+	createDom(naber, fragment);
 
 	container.innerHTML = '';
-	container.appendChild(virtualContainer);
+	container.appendChild(fragment);
 }
