@@ -1,6 +1,7 @@
 import type { VNode } from "@/shared/types/vnode";
 import { internalRender } from "./internalRender";
 import { eventList } from "./eventHandelr";
+import { setRootVDOM } from "../rootNode";
 
 // 요소에 저장된 이벤트 핸들러들의 타입 정의
 interface ElementEventHandlers {
@@ -14,6 +15,7 @@ const delegatedContainers = new WeakSet<Node>();
 export const HANDLERS = Symbol("__handlers"); //Symbol.for
 
 export function render(vnode: VNode, container: Node | HTMLElement): void {
+  setRootVDOM(vnode);
   // 2) 빌드 단계: DocumentFragment 생성
   const fragment: DocumentFragment = document.createDocumentFragment();
 
@@ -40,6 +42,7 @@ export function render(vnode: VNode, container: Node | HTMLElement): void {
   //---------------------------------------------------------
 
   // 4) 커밋 단계: fragment를 실제 container에 한 번에 붙임
+  //-----------------------> !!!!!!!!!!!!!!!!!!!!!!!!!!!! 이 로직 분리하기!!!!!!!!!!!!!!!!!!!!!!!!! -> 따로 분리해야한다. -> 왜 ???? 리렌더링 할때 아래 로직 즉, 실제 DOM에 바로 업데이트하는 로직이 같이 있으면 안된다.
   container.appendChild(fragment);
 }
 

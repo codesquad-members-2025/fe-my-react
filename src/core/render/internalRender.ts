@@ -1,10 +1,20 @@
 import type { VNode } from "@/shared/types/vnode";
 import { mapPropToAttr } from "./mapPropToAttr";
 import { attachHandlers } from "./attachHandlers";
+import { pushCurrentVNode, popCurrentVNode } from "../hook/hookManager";
 
 export function internalRender(vnode: VNode, parent: Node): void {
   if (typeof vnode.type === "function") {
+    pushCurrentVNode(vnode);
+    //VNode에 새로운 필드 추가(render 함수 실행 과정에 한정한다.) rerender과정에서는 이런 과정이 포함되어선 안된다.
+    if (!vnode.hookMetaData) {
+      vnode.hookMetaData = { hooks: [], pointer: 0 };
+    } else {
+      //함수형 컴포넌트 실행전 pointer 초기화 작업
+      vnode.hookMetaData.pointer = 0;
+    }
     internalRender(vnode.type(vnode.props), parent);
+    popCurrentVNode();
     return;
   }
 
