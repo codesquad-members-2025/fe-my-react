@@ -3,9 +3,9 @@ import { mapPropToAttr } from "./mapPropToAttr";
 import { attachHandlers } from "./attachHandlers";
 import { pushCurrentVNode, popCurrentVNode } from "../hook/hookManager";
 
-interface RenderedVNode extends VNode {
+export interface RenderedVNode extends VNode {
   _renderedChildVNode?: RenderedVNode;
-  _renderedChildren?: (RenderedVNode | string)[];
+  _renderedChildren?: RenderedVNode[];
   domRef?: HTMLElement | Text;
 }
 
