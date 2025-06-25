@@ -6,7 +6,7 @@ import { pushCurrentVNode, popCurrentVNode } from "../hook/hookManager";
 interface RenderedVNode extends VNode {
   _renderedChildVNode?: RenderedVNode;
   _renderedChildren?: (RenderedVNode | string)[];
-  domRef?: HTMLElement;
+  domRef?: HTMLElement | Text;
 }
 
 export function internalRender(vnode: VNode, parent: Node): RenderedVNode {
@@ -69,8 +69,16 @@ function childrenHandler(
   value.forEach((child: ChildElementType) => {
     // 1) 문자열 또는 숫자면 텍스트 노드
     if (typeof child === "string" || typeof child === "number") {
-      renderedVNode._renderedChildren!.push(String(child));
-      rootNode.appendChild(document.createTextNode(String(child)));
+      const textNode = document.createTextNode(String(child));
+      rootNode.appendChild(textNode);
+      const textRenderedVNode: RenderedVNode = {
+        type: "#text",
+        props: { nodeValue: String(child) },
+        domRef: textNode,
+        key: null,
+        ref: null,
+      };
+      renderedVNode._renderedChildren!.push(textRenderedVNode);
       return;
     } else if (child !== null && child !== undefined) {
       renderedVNode._renderedChildren!.push(internalRender(child, rootNode));
