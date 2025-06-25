@@ -34,6 +34,7 @@ export function useHookManger(): [
   getCurrentHookData: () => HookMetaData,
   isInit: () => boolean
 ] {
+  //useHookManger함수가 호출 될때마다 호출된 VNode의 환경(hookMetaData)을 렉시컬 환경에 추가합니다.
   const hookMetaData = getCurrentVNode().hookMetaData!;
   const hooks: HookMetaDataArr = hookMetaData.hooks as HookMetaDataArr;
 
@@ -42,13 +43,13 @@ export function useHookManger(): [
    * @param state hook의 상태
    * @param setterFn 등록할 setter 함수
    *
-   * hook의 상태,setter함수(클로저 이용),해당hook의 pointer를 등록 합니다.
+   * hook의 상태,setter함수(클로저 이용)를 등록 합니다.
+   * useHookManger 함수가 호출될때 현재의 VNode을 렉시컬 환경에 기억하는 해당 함수를 새롭게 만듭니다.
    */
   const registerHookHelper = (
     state: any,
     setterFn: (newState: any) => void
   ): void => {
-    // TODO: 그냥 push로 하면 안되는거야? 고민 해보기
     hooks.push([state, setterFn]);
     /**
      *  hooks[hookMetaData.pointer] = [state, setterFn];
