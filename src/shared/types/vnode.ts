@@ -10,7 +10,7 @@ export interface VNode {
   type: string | Function;
   key: string | number | null;
   ref: any;
-  props: HTMLAttributes & { children: Children };
+  props: HTMLAttributes & { children?: Children };
   hookMetaData?: {
     hooks: HookMetaDataArr;
     pointer: number;
