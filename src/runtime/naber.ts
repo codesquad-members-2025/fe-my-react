@@ -1,11 +1,13 @@
+import { withNaberScope } from '@src/renderUtils';
 import type { Naber, VNode } from '@src/types/base.types';
+import { getTag } from './tag';
 
 /**
  * 전역 naber 상태를 담는 객체입니다.
  * - `naberRoot`: 루트 Naber 트리
  * - `currentlyRenderingNaber`: 현재 렌더링 중인 함수형 컴포넌트 Naber
  */
-const naber = {
+const naberManager = {
 	/** 최상위 Naber 트리 객체 */
 	naberRoot: null as Naber | null,
 
@@ -13,18 +15,23 @@ const naber = {
 	currentlyRenderingNaber: null as Naber | null,
 };
 
+const setNaberRoot = (naber: Naber) => (naberManager.naberRoot = naber);
+
+const setCurrentlyRenderingNaber = (value: Naber | null) =>
+	(naberManager.currentlyRenderingNaber = value);
+
 /**
  * 루트 Naber 객체를 반환합니다.
  * @returns {Naber | null} 현재 저장된 루트 Naber 객체
  */
-const getNaberRoot = (): Naber | null => naber.naberRoot;
+const getNaberRoot = (): Naber | null => naberManager.naberRoot;
 
 /**
  * 현재 렌더링 중인 함수형 컴포넌트의 Naber 객체를 반환합니다.
  * @returns {Naber | null} 현재 렌더링 중인 Naber 객체
  */
 const getCurrentWorkingNaber = (): Naber | null =>
-	naber.currentlyRenderingNaber;
+	naberManager.currentlyRenderingNaber;
 
 /**
  * 단일 VNode를 기반으로 Naber 객체를 생성합니다.
@@ -34,6 +41,7 @@ const getCurrentWorkingNaber = (): Naber | null =>
 const createNaber = (vnode: VNode): Naber => {
 	const { children, ...restProps } = vnode.props;
 	return {
+		tag: getTag(vnode.type),
 		type: vnode.type,
 		props: restProps,
 		children: [],
@@ -51,20 +59,29 @@ const createNaber = (vnode: VNode): Naber => {
  */
 const buildNaberTree = (parentNaber: Naber, vnodeChildren: VNode[]): void => {
 	for (const vnode of vnodeChildren) {
-		const naber: Naber = createNaber(vnode);
+		// 조건부 렌더링 시 vnodeChildren에 [false]가 들어오면 vnode가 false가 됨
+		// vnode가 객체가 아니므로 createNaber 에러 발생
+		// false일 경우 return
+		if (!vnode) return;
+		const newNextNaber: Naber = createNaber(vnode);
 
-		parentNaber.children.push(naber);
+		parentNaber.children.push(newNextNaber);
 
-		if (typeof naber.type === 'function') {
-			const renderedVNode = (naber.type as Function)({
-				...naber.props,
-				children: naber.children,
-			});
-			const children = renderedVNode.props.children ?? [];
-			buildNaberTree(naber, children);
+		if (typeof newNextNaber.type === 'function') {
+			const newChildVNode: VNode = withNaberScope(
+				newNextNaber,
+				newNextNaber.type,
+				vnode.props,
+			);
+
+			const newChildNaber = createNaber(newChildVNode);
+			// 함수형 컴포넌트 호출 후 부모와 연결
+			newNextNaber.children = [newChildNaber];
+			const children = newChildVNode.props.children ?? [];
+			buildNaberTree(newChildNaber, children);
 		} else {
 			const children = vnode.props.children ?? [];
-			buildNaberTree(naber, children);
+			buildNaberTree(newNextNaber, children);
 		}
 	}
 };
@@ -76,8 +93,31 @@ const buildNaberTree = (parentNaber: Naber, vnodeChildren: VNode[]): void => {
  */
 const getNaberTree = (vnode: VNode): Naber => {
 	const naberRoot: Naber = createNaber(vnode);
-	buildNaberTree(naberRoot, vnode.props.children);
+	setNaberRoot(naberRoot);
+
+	if (typeof vnode.type !== 'function') {
+		buildNaberTree(naberRoot, vnode.props.children);
+		return naberRoot;
+	}
+
+	const newChildVNode: VNode = withNaberScope(
+		naberRoot,
+		naberRoot.type as Function,
+		vnode.props,
+	);
+	const newChildNaber: Naber = createNaber(newChildVNode);
+	naberRoot.children = [newChildNaber];
+	const children: VNode[] = newChildVNode.props.children || [];
+	buildNaberTree(newChildNaber, children);
+
 	return naberRoot;
 };
 
-export { getNaberRoot, getCurrentWorkingNaber, getNaberTree };
+export {
+	setCurrentlyRenderingNaber,
+	getNaberRoot,
+	getCurrentWorkingNaber,
+	getNaberTree,
+	createNaber,
+	buildNaberTree,
+};

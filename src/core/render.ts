@@ -1,4 +1,6 @@
-import { getNaberTree } from '../runtime/naber';
+import { withNaberScope } from '@src/renderUtils';
+import { diff } from '../runtime/diff';
+import { getNaberRoot, getNaberTree } from '../runtime/naber';
 import type {
 	FragmentVNode,
 	Naber,
@@ -9,7 +11,7 @@ import { FRAGMENT, TEXT_ELEMENT } from './constants';
 import { applyProps, applyRef } from './domEffects';
 
 export function createDom(naber: Naber, fragment: Node): void {
-	// Naber가 FunctionComponent 일 때, 자식을 재귀
+	// Naber가 FunctionComponent 일 때, 자식을 재귀 (함수 컴포넌트 자체는 DOM을 생성하지 않음)
 	if (typeof naber.type === 'function') {
 		for (const child of naber.children) createDom(child, fragment);
 		return;
@@ -37,17 +39,40 @@ export function createDom(naber: Naber, fragment: Node): void {
 	fragment.appendChild(dom);
 }
 
+let rootElement: Element;
+
 export function render(
 	vnode: VNode | TextVNode | FragmentVNode,
 	container: Element,
 ): void {
-	const rootVNode =
-		typeof vnode.type === 'function'
-			? (vnode.type as Function)(vnode.props)
-			: vnode;
+	rootElement = container;
 
-	const naber = getNaberTree(rootVNode);
+	const naber = getNaberTree(vnode);
 
+	commit(naber, container);
+}
+
+export function updateComponent(currentWorkingNaber: Naber) {
+	const { props, children: prevNabers, type: FC } = currentWorkingNaber;
+
+	const nextVNode: VNode = withNaberScope(
+		currentWorkingNaber,
+		FC as Function,
+		props,
+	);
+
+	const newNextNabers: Naber[] = diff(prevNabers, [nextVNode]);
+
+	currentWorkingNaber.children = newNextNabers;
+
+	const rootNaber = getNaberRoot();
+
+	if (!rootNaber) return console.error('rootNaber가 존재하지 않음');
+
+	commit(rootNaber, rootElement);
+}
+
+function commit(naber: Naber, container: Element): void {
 	const fragment = document.createDocumentFragment();
 
 	createDom(naber, fragment);
