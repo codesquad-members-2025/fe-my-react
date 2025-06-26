@@ -16,4 +16,5 @@ export interface HTMLAttributes {
   // 중요한 props들 ...?
   ref?: any;
   key?: string | number;
+  nodeValue?: string;
 }

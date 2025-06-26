@@ -17,7 +17,7 @@ export default function createElement(
   const rawChildren: Children =
     normalizedChildren?.length === 0 ? null : normalizedChildren; // 굳이 이 로직이 필요할까?
 
-  const rawResult: VNode = {
+  const vnode: VNode = {
     type,
     key: normalizedKey,
     ref: ref ?? null,
@@ -27,7 +27,14 @@ export default function createElement(
     },
   };
 
-  const result: Readonly<VNode> = Object.freeze(rawResult);
+  if (typeof type === "function") {
+    vnode.hookMetaData = {
+      hooks: [],
+      pointer: 0,
+    };
+  }
+
+  const result: Readonly<VNode> = Object.freeze(vnode);
 
   return result;
 }
