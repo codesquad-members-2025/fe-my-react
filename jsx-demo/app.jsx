@@ -1,10 +1,11 @@
 import { performanceInstrument } from "./performance/performanceInstrument";
+import Button from "./src/Button";
 
 function App() {
   return (
     <div>
       <h1>JSX Performance Test</h1>
-
+      <Button />
       {/* 입력 상태 유지 테스트용 인풋 */}
       <div>
         <label htmlFor="textInput">텍스트 입력:</label>
