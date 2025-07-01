@@ -78,7 +78,7 @@ describe('useState 훅', () => {
     expect(getCount2().textContent).toBe('110');
   });
 
-  it('상태 변경 후 vnode.__dom이 새로운 DOM 노드를 가리켜야 한다', () => {
+  it('상태 변경 후에도 동일한 DOM 노드를 유지하면서 내용이 업데이트되어야 한다', () => {
     const App = () => {
       const [count, setCount] = useState(0);
       window.bump = () => setCount((c) => c + 1);
@@ -86,13 +86,11 @@ describe('useState 훅', () => {
     };
 
     mount(App);
-    const initialDom = vnode.__dom;
+    const initialDom = root.querySelector('[data-testid="count"]');
     window.bump();
-    const updatedDom = vnode.__dom;
+    const updatedDom = root.querySelector('[data-testid="count"]');
 
-    const countNode = root.querySelector('[data-testid="count"]');
-    expect(updatedDom).toBe(countNode);
-    expect(updatedDom).not.toBe(initialDom);
+    expect(updatedDom).toBe(initialDom);
     expect(updatedDom.textContent).toBe('num: 1');
   });
 
@@ -159,8 +157,12 @@ describe('useState 훅', () => {
       return <div data-testid="count">{count}</div>;
     };
     mount(App);
+    const initialDom = root.querySelector('[data-testid="count"]');
     expect(renderCount).toBe(1);
     window.same();
+    const updatedDom = root.querySelector('[data-testid="count"]');
+    expect(updatedDom).toBe(initialDom);
+    expect(updatedDom.textContent).toBe('0');
     expect(renderCount).toBe(1); // 값이 같으므로 리렌더링 없어야 함
   });
 });

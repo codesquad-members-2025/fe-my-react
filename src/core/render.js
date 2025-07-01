@@ -2,6 +2,7 @@ import { isEventHandler } from './utils/dom';
 import { setCurrentState } from './context';
 import { getComponentState, setComponentState } from './componentState';
 import { initEventDelegation } from './event';
+import { patch } from './patch';
 
 /**
  * Virtual DOM(VNode)을 실제 DOM으로 변환하여 container에 마운트합니다.
@@ -29,11 +30,12 @@ export function render(vnode, container) {
 
   // 함수형 컴포넌트인 경우 실행하여 vnode를 반환받고 다시 렌더링
   if (typeof vnode.type === 'function') {
+    const instanceKey = vnode.props.key != null ? vnode.props.key : vnode.type;
     const evaluatedVNode = renderFunctionComponent(vnode);
     const dom = createDom(evaluatedVNode);
-
-    //함수형 vnode(AppVNode)에 __dom 설정
-    vnode.__dom = dom;
+    // 컴포넌트 상태에 최신 루트 DOM 저장
+    const state = getComponentState(instanceKey);
+    if (state) state.dom = dom;
 
     container.appendChild(dom);
     initEventDelegation(container);
@@ -43,7 +45,7 @@ export function render(vnode, container) {
   const dom = createDom(vnode);
   container.appendChild(dom);
 
-  //이벤트 위임
+  // 이벤트 위임 초기화
   initEventDelegation(container);
 }
 
@@ -52,26 +54,31 @@ export function render(vnode, container) {
  *
  * 처리 방식:
  * - 함수형 컴포넌트는 실행 결과를 다시 vnode로 변환하여 재귀 처리됩니다.
- * - TEXT_ELEMENT는 `document.createTextNode`로 생성됩니다.
- * - 일반 태그는 `document.createElement`로 생성하고 props를 DOM 속성으로 설정합니다.
+ * - TEXT_ELEMENT는 document.createTextNode로 생성됩니다.
+ * - 일반 태그는 document.createElement로 생성하고 props를 DOM 속성으로 설정합니다.
  * - children은 배열로 표준화한 뒤, 각 항목을 재귀적으로 DOM으로 변환하여 자식으로 추가합니다.
  *
  * @function
  * @param {Object} vnode - 변환할 Virtual DOM 노드
  * @returns {Node} 변환된 실제 DOM 노드
  */
-function createDom(vnode) {
+export function createDom(vnode) {
   // 함수형 컴포넌트면 먼저 실행해서 vnode를 얻고 다시 처리
   if (typeof vnode.type === 'function') {
+    const instanceKey = vnode.props.key != null ? vnode.props.key : vnode.type;
     const evaluatedVNode = renderFunctionComponent(vnode);
     const dom = createDom(evaluatedVNode);
-    vnode.__dom = dom;
+    // 컴포넌트 상태에 최신 루트 DOM 저장
+    const state = getComponentState(instanceKey);
+    if (state) state.dom = dom;
     return dom;
   }
 
-  // TEXT_ELMENT 처리
+  // TEXT_ELEMENT 처리
   if (vnode.type === 'TEXT_ELEMENT') {
-    return document.createTextNode(vnode.props.nodeValue);
+    const dom = document.createTextNode(vnode.props.nodeValue);
+    dom.__vnode = vnode;
+    return dom;
   }
 
   const { type, props } = vnode;
@@ -92,15 +99,15 @@ function createDom(vnode) {
     }
   }
 
-  //children 배열로 표준화
+  // children 배열로 표준화
   const children = Array.isArray(props.children)
     ? props.children
     : [props.children];
 
-  //_vnode 속성 추가
+  // vnode 참조 저장
   dom.__vnode = vnode;
 
-  //재귀적으로 자식 랜더링
+  // 재귀적으로 자식 랜더링
   children.filter(isRenderable).forEach((child) => {
     const childDom = createDom(child);
     dom.appendChild(childDom);
@@ -129,10 +136,8 @@ function isRenderable(child) {
  *
  * 처리 방식:
  * - vnode.type이 함수인 경우, 해당 함수를 실행하여 반환된 vnode를 리턴합니다.
- * - 각 함수형 컴포넌트는 componentMap에 고유한 상태 저장소(state)를 가집니다.
- *   - 상태 저장소가 없으면 새로 생성하고, 있으면 기존 값을 재사용합니다.
- * - 컴포넌트가 렌더링되는 시점에 해당 상태를 현재 렌더링 컨텍스트(__CURRENT_STATE)에 설정합니다.
- *   - useState 훅은 이 설정된 상태를 참조하여 작동합니다.
+ * - 각 함수형 컴포넌트는 고유한 상태 저장소(state)를 가집니다.
+ * - 컴포넌트가 렌더링되는 시점에 해당 상태를 현재 렌더링 컨텍스트에 설정합니다.
  * - 반환된 vnode는 이후 createDom 또는 render 함수에서 처리되어 실제 DOM으로 변환됩니다.
  *
  * @function
@@ -140,12 +145,14 @@ function isRenderable(child) {
  * @returns {Object} 평가된 Virtual DOM 노드
  */
 function renderFunctionComponent(vnode) {
-  let state = getComponentState(vnode.type);
-  if (!state) {
-    state = initComponentInstance(vnode);
-  }
+  const instanceKey = vnode.props.key != null ? vnode.props.key : vnode.type;
+  let state = getComponentState(instanceKey);
+  if (!state) state = initComponentInstance(vnode, instanceKey);
+  // props 동기화
+  state.props = vnode.props;
+  // 훅 컨텍스트 준비
   prepareHookContext(state);
-  return vnode.type(vnode.props);
+  return state.componentType(state.props);
 }
 
 /**
@@ -162,32 +169,41 @@ function prepareHookContext(state) {
  * 컴포넌트 인스턴스의 상태를 초기화하고, 재렌더링 콜백을 생성합니다.
  *
  * @param {Object} vnode - 함수형 컴포넌트의 Virtual DOM 노드
+ * @param {*} instanceKey - 컴포넌트 인스턴스의 고유 키
  * @returns {Object} 초기화된 컴포넌트 상태 객체
  */
-function initComponentInstance(vnode) {
+function initComponentInstance(vnode, instanceKey) {
   const state = {
+    componentType: vnode.type,
+    props: vnode.props,
     hookIndex: 0,
     stateBucket: [],
+    dom: null,
     rerender: null
   };
-  state.rerender = createRerenderCallback(vnode, state);
-  setComponentState(vnode.type, state);
+
+  state.instanceKey = instanceKey;
+  state.rerender = createRerenderCallback(state);
+  setComponentState(instanceKey, state);
   return state;
 }
 
 /**
  * 컴포넌트를 다시 호출하여 새로운 VNode를 생성하고, 기존 DOM을 교체하는 재렌더링 콜백을 생성합니다.
  *
- * @param {Object} vnode - 기존 Virtual DOM 노드
  * @param {Object} state - 컴포넌트 인스턴스 상태 객체
  * @returns {Function} 재렌더링을 수행하는 콜백 함수
  */
-function createRerenderCallback(vnode, state) {
+function createRerenderCallback(state) {
   return () => {
     prepareHookContext(state);
-    const nextVNode = vnode.type(vnode.props);
-    const nextDom = createDom(nextVNode);
-    vnode.__dom.replaceWith(nextDom);
-    vnode.__dom = nextDom;
+    const nextVNode = state.componentType(state.props);
+    const oldDom = state.dom; // 이전 루트 DOM
+
+    // patch 호출: oldDom의 __vnode를 prevVNode로 사용
+    const newDom = patch(oldDom, nextVNode);
+
+    // 상태에 새 DOM 저장
+    state.dom = newDom;
   };
 }
